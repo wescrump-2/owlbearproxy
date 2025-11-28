@@ -1,7 +1,11 @@
 {
-  "name": "savaged-us-owlbear-proxy",
+  "name": "owlbear-savaged-proxy",
   "version": "1.0.0",
+  "type": "module",
   "dependencies": {
     "http-proxy-middleware": "^3.0.3"
+  },
+  "scripts": {
+    "dev": "vercel dev"
   }
 }
