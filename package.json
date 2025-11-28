@@ -1,0 +1,7 @@
+{
+  "name": "savaged-us-owlbear-proxy",
+  "version": "1.0.0",
+  "dependencies": {
+    "http-proxy-middleware": "^3.0.3"
+  }
+}
