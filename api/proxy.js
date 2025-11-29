@@ -7,7 +7,7 @@ const allowedOrigins = [
   'https://localhost:5173', // for local dev
 ];
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   console.log(`[${new Date().toISOString()}] Request received: ${req.method} ${req.url}`);
   // CORS setup for OwlBear
   const origin = req.headers.origin;
@@ -21,6 +21,39 @@ export default function handler(req, res) {
   if (req.method === 'OPTIONS') {
     console.log(`[${new Date().toISOString()}] Handling OPTIONS request`);
     res.status(200).end();
+    return;
+  }
+
+  if (req.url === '/url/proxy' && req.method === 'POST') {
+    // Handle URL proxy
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk));
+    await new Promise(resolve => req.on('end', resolve));
+    const bodyStr = Buffer.concat(chunks).toString();
+    let body;
+    try {
+      body = JSON.parse(bodyStr);
+    } catch (e) {
+      res.status(400).json({ error: 'Invalid JSON in request body' });
+      return;
+    }
+    const { url } = body;
+    if (!url) {
+      res.status(400).json({ error: 'URL is required in request body' });
+      return;
+    }
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        res.status(response.status).json({ error: `Failed to fetch URL: ${response.statusText}` });
+        return;
+      }
+      const html = await response.text();
+      res.setHeader('Content-Type', 'text/html');
+      res.status(200).send(html);
+    } catch (e) {
+      res.status(500).json({ error: 'Error fetching URL', message: e.message });
+    }
     return;
   }
 
