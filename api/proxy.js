@@ -4,7 +4,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 const allowedOrigins = [
   'https://www.owlbear.rodeo',
   'https://app.owlbear.rodeo',
-  'http://localhost:5347', // for local dev
+  'https://localhost:5173', // for local dev
 ];
 
 export default function handler(req, res) {
