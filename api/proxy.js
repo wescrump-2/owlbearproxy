@@ -49,7 +49,11 @@ export default function handler(req, res) {
     onError: (err, req, res) => {
       console.error(`[${new Date().toISOString()}] Proxy error:`, err);
       if (!res.headersSent) {
-        res.status(500).json({ error: 'Proxy error' });
+        if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.message.includes('timeout')) {
+          res.status(504).json({ error: 'Gateway Timeout', message: 'The target API took too long to respond.' });
+        } else {
+          res.status(500).json({ error: 'Proxy error', message: err.message });
+        }
       }
     },
   });
